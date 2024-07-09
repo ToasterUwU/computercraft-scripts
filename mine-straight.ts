@@ -13,6 +13,9 @@ function goBack() {
         }
         turtle.forward()
     }
+
+    turtle.turnLeft()
+    turtle.turnLeft()
 }
 
 function goBackIfNeeded() {
