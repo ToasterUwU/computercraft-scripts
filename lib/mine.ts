@@ -1,6 +1,6 @@
 import { getBlockNameDown, getBlockNameFront, getBlockNameUp } from "./inspect";
 
-const veinBlacklist = ["minecraft:air", "minecraft:stone", "minecraft:deepslate", "minecraft:dirt", "minecraft:grass_block"]
+const veinBlacklist = ["minecraft:air", "minecraft:stone", "minecraft:tuff", "minecraft:diorite", "minecraft:granite", "minecraft:deepslate", "minecraft:dirt", "minecraft:grass_block"]
 
 function mineVeinPart(blockType: string) {
     print("Above: ", getBlockNameUp())
@@ -31,9 +31,12 @@ function mineVeinPart(blockType: string) {
     }
 }
 
-// Will mine vein of whatever is in front of it and return to the starting position, dont use this when facing something that isnt a vein
-export function mineVein() {
-    let veinType = getBlockNameFront()
+// Will mine vein of whatever is given as value or is in front of it and return to the starting position, dont use this when facing something that isnt a vein
+export function mineVein(veinType: string = null) {
+    if (veinType == null) {
+        veinType = getBlockNameFront()
+    }
+
     if (veinType == "" || veinBlacklist.includes(veinType)) {
         return false
     }

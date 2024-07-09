@@ -1,5 +1,7 @@
 import { refuelIfNeeded } from "./lib/fuel"
-import { inspectAround } from "./lib/inspect"
+import { containsAny } from "./lib/general"
+import { getBlockNameDown, getBlockNameFront, getBlockNameUp } from "./lib/inspect"
+import { mineVein } from "./lib/mine"
 
 let moved = 0
 function goBack() {
@@ -18,7 +20,7 @@ function goBack() {
     turtle.turnLeft()
 }
 
-function goBackIfNeeded() {
+function goBackIfNeeded(lavaDetected: boolean) {
     if (turtle.getFuelLevel() < moved + 50) {
         refuelIfNeeded(turtle.getFuelLimit())
         if (turtle.getFuelLevel() < moved + 50) {
@@ -41,43 +43,8 @@ function goBackIfNeeded() {
         return true
     }
 
-    let lavaDetected = false
-    let [forwardSuccess, forwardData] = turtle.inspect()
-    if (forwardSuccess) {
-        if (forwardData["name"] == "minecraft:lava") {
-            lavaDetected = true
-        }
-    }
-
-    let [upSuccess, upData] = turtle.inspect()
-    if (upSuccess) {
-        if (upData["name"] == "minecraft:lava") {
-            lavaDetected = true
-        }
-    }
-
-    let aroundData = inspectAround()
-    let [leftSuccess, leftData] = aroundData.left
-    if (leftSuccess) {
-        if (leftData["name"] == "minecraft:lava") {
-            lavaDetected = true
-        }
-    }
-    let [behindSuccess, behindData] = aroundData.behind
-    if (behindSuccess) {
-        if (behindData["name"] == "minecraft:lava") {
-            lavaDetected = true
-        }
-    }
-    let [rightSuccess, rightData] = aroundData.right
-    if (rightSuccess) {
-        if (rightData["name"] == "minecraft:lava") {
-            lavaDetected = true
-        }
-    }
-
     if (lavaDetected) {
-        print("Lava in the way, aborting.")
+        print("Lava detected, aborting.")
         goBack()
         return true
     }
@@ -91,16 +58,51 @@ while (turtle.detect() == false) {
     moved = moved + 1
 }
 
+const valueables = ["emerald", "diamond", "lapis", "gold", "iron", "redstone"]
+
+let lavaDetected = false
 while (true) {
-    if (goBackIfNeeded()) {
+    if (goBackIfNeeded(lavaDetected)) {
         break
     }
 
-    while (turtle.detect()) {
-        turtle.dig()
-        sleep(0.5)
+    for (let height = 0; height < 2; height++) {
+        if (height == 1) {
+            turtle.digUp()
+            turtle.up()
+        }
+
+        let upBlock = getBlockNameUp()
+        if (containsAny(upBlock, valueables)) {
+            mineVein(upBlock)
+        } else if (upBlock == "minecraft:lava") {
+            lavaDetected = true
+        }
+
+        let downBlock = getBlockNameDown()
+        if (containsAny(downBlock, valueables)) {
+            mineVein(downBlock)
+        }
+
+        let forwardBlock = ""
+        for (let i = 0; i < 4; i++) {
+            forwardBlock = getBlockNameFront()
+            if (containsAny(forwardBlock, valueables)) {
+                mineVein(forwardBlock)
+            } else if (forwardBlock == "minecraft:lava") {
+                lavaDetected = true
+            }
+
+            turtle.turnLeft()
+        }
+        if (height == 1) {
+            turtle.digDown()
+            turtle.down()
+        }
     }
+
+    //next section
+    turtle.dig()
     turtle.forward()
     moved = moved + 1
-    turtle.digUp()
 }
