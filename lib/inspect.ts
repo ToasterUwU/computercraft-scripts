@@ -21,7 +21,7 @@ export function inspectBehind() {
     return data
 }
 
-// Inspects left, behind, and right in one go, returns the first non null value
+// Inspects left, behind, and right in one go, returns the values as Object with keys
 export function inspectAround() {
     turtle.turnLeft()
     let left = turtle.inspect()
@@ -31,5 +31,5 @@ export function inspectAround() {
     let right = turtle.inspect()
     turtle.turnLeft()
 
-    return {left, behind, right}
+    return { left, behind, right }
 }
