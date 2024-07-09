@@ -20,7 +20,7 @@ function goBack() {
     turtle.turnLeft()
 }
 
-function goBackIfNeeded(lavaDetected: boolean) {
+function goBackIfNeeded() {
     if (turtle.getFuelLevel() < moved + 50) {
         refuelIfNeeded(turtle.getFuelLimit())
         if (turtle.getFuelLevel() < moved + 50) {
@@ -43,12 +43,6 @@ function goBackIfNeeded(lavaDetected: boolean) {
         return true
     }
 
-    if (lavaDetected) {
-        print("Lava detected, aborting.")
-        goBack()
-        return true
-    }
-
     return false
 }
 
@@ -60,12 +54,12 @@ while (turtle.detect() == false) {
 
 const valueables = ["emerald", "diamond", "lapis", "gold", "iron", "redstone"]
 
-let lavaDetected = false
 while (true) {
-    if (goBackIfNeeded(lavaDetected)) {
+    if (goBackIfNeeded()) {
         break
     }
 
+    let lavaDetected = false
     for (let height = 0; height < 2; height++) {
         if (height == 1) {
             turtle.digUp()
@@ -82,6 +76,8 @@ while (true) {
         let downBlock = getBlockNameDown()
         if (containsAny(downBlock, valueables)) {
             mineVein(downBlock)
+        } else if (downBlock == "minecraft:lava") {
+            lavaDetected = true
         }
 
         let forwardBlock = ""
@@ -99,6 +95,12 @@ while (true) {
             turtle.digDown()
             turtle.down()
         }
+    }
+
+    if (lavaDetected) {
+        print("Lava detected, aborting.")
+        goBack()
+        break
     }
 
     //next section
