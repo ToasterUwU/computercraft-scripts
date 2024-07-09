@@ -1,35 +1,5 @@
-function refuelIfNeeded(required: number = 0): boolean {
-    print("Current fuel: ", turtle.getFuelLevel(), "/", tostring(turtle.getFuelLimit()))
-    print("Required fuel: ", required)
-
-    if (turtle.getFuelLevel() > required) {
-        print("Already at required Fuel Level")
-        return true
-    }
-
-    let i = 1
-    turtle.select(i)
-
-    while (turtle.getFuelLevel() < required) {
-        while (turtle.refuel(1) == false) {
-            if (i == 16) {
-                print("No fuel in inventory, cant refuel")
-                return false
-            }
-
-            if (turtle.getFuelLevel() == turtle.getFuelLimit()) {
-                print("Fueltank is full")
-                return false
-            }
-
-            i++
-            turtle.select(i)
-        }
-        print("Refueled once, current level is ", turtle.getFuelLevel(), "/", turtle.getFuelLimit())
-    }
-    print("Done refueling")
-    return true
-}
+import { refuelIfNeeded } from "./lib/fuel"
+import { inspectAround } from "./lib/inspect"
 
 let moved = 0
 function goBack() {
@@ -64,17 +34,46 @@ function goBackIfNeeded() {
         return true
     }
 
-    let functions = [turtle.inspect, turtle.inspectUp, turtle.inspectDown]
-    functions.forEach(func => {
-        let [success, data] = func()
-        if (success) {
-            if (data["name"] == "minecraft:lava") {
-                print("Lava in the way, aborting.")
-                goBack()
-                return true
-            }
+    let lavaDetected = false
+    let [forwardSuccess, forwardData] = turtle.inspect()
+    if (forwardSuccess) {
+        if (forwardData["name"] == "minecraft:lava") {
+            lavaDetected = true
         }
-    });
+    }
+
+    let [upSuccess, upData] = turtle.inspect()
+    if (upSuccess) {
+        if (upData["name"] == "minecraft:lava") {
+            lavaDetected = true
+        }
+    }
+
+    let aroundData = inspectAround()
+    let [leftSuccess, leftData] = aroundData.left
+    if (leftSuccess) {
+        if (leftData["name"] == "minecraft:lava") {
+            lavaDetected = true
+        }
+    }
+    let [behindSuccess, behindData] = aroundData.behind
+    if (behindSuccess) {
+        if (behindData["name"] == "minecraft:lava") {
+            lavaDetected = true
+        }
+    }
+    let [rightSuccess, rightData] = aroundData.right
+    if (rightSuccess) {
+        if (rightData["name"] == "minecraft:lava") {
+            lavaDetected = true
+        }
+    }
+
+    if (lavaDetected) {
+        print("Lava in the way, aborting.")
+        goBack()
+        return true
+    }
 
     return false
 }
@@ -85,8 +84,15 @@ while (turtle.detect() == false) {
     moved = moved + 1
 }
 
-while (goBackIfNeeded() == false) {
-    turtle.dig()
+while (true) {
+    if (goBackIfNeeded()) {
+        break
+    }
+
+    while (turtle.detect()) {
+        turtle.dig()
+        sleep(0.5)
+    }
     turtle.forward()
     moved = moved + 1
     turtle.digUp()
