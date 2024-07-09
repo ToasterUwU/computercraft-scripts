@@ -1,3 +1,24 @@
+export function getBlockName(inspectReturn: LuaMultiReturn<[boolean, string | Object | LuaTable<AnyNotNil, any>]>): string {
+    let [success, blockData] = inspectReturn
+    if (success == false) {
+        return ""
+    } else {
+        return blockData["name"]
+    }
+}
+
+export function getBlockNameFront(): string {
+    return getBlockName(turtle.inspect())
+}
+
+export function getBlockNameUp(): string {
+    return getBlockName(turtle.inspectUp())
+}
+
+export function getBlockNameDown(): string {
+    return getBlockName(turtle.inspectDown())
+}
+
 export function inspectLeft() {
     turtle.turnLeft()
     let data = turtle.inspect()
