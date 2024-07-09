@@ -104,7 +104,10 @@ while (true) {
     }
 
     //next section
-    turtle.dig()
+    while (turtle.detect()) {
+        turtle.dig()
+        sleep(0.5)
+    }
     turtle.forward()
     moved = moved + 1
 }
