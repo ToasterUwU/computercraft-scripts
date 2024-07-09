@@ -7,6 +7,10 @@ function goBack() {
     turtle.turnLeft()
 
     for (let i = 0; i < moved; i++) {
+        while (turtle.detect()) {
+            turtle.dig()
+            sleep(0.5)
+        }
         turtle.forward()
     }
 }
