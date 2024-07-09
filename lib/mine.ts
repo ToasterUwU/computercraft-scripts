@@ -3,7 +3,6 @@ import { getBlockNameDown, getBlockNameFront, getBlockNameUp } from "./inspect";
 const veinBlacklist = ["minecraft:air", "minecraft:stone", "minecraft:tuff", "minecraft:diorite", "minecraft:granite", "minecraft:deepslate", "minecraft:dirt", "minecraft:grass_block"]
 
 function mineVeinPart(blockType: string) {
-    print("Above: ", getBlockNameUp())
     if (getBlockNameUp() == blockType) {
         turtle.digUp()
         turtle.up()
@@ -11,7 +10,6 @@ function mineVeinPart(blockType: string) {
         turtle.down()
     }
 
-    print("Down: ", getBlockNameDown())
     if (getBlockNameDown() == blockType) {
         turtle.digDown()
         turtle.down()
@@ -20,7 +18,6 @@ function mineVeinPart(blockType: string) {
     }
 
     for (let i = 0; i < 4; i++) {
-        print("In Front: ", getBlockNameFront())
         if (getBlockNameFront() == blockType) {
             turtle.dig()
             turtle.forward()
