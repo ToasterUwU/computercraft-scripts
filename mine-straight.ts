@@ -52,7 +52,7 @@ while (turtle.detect() == false) {
     moved = moved + 1
 }
 
-const valueables = ["emerald", "diamond", "lapis", "gold", "iron", "redstone"]
+const valueables = ["emerald", "diamond", "lapis", "gold", "iron", "redstone", "coal"]
 
 while (true) {
     if (goBackIfNeeded()) {
